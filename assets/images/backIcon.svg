@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="52" viewBox="0 0 130 52">
+  <g id="Group_4" data-name="Group 4" transform="translate(-20 -23)">
+    <text id="ย้อนกลับ" transform="translate(52 57)" fill="#fff" font-size="40" font-family="THSarabunNew-Bold, TH Sarabun New" font-weight="700"><tspan x="0" y="0">ย้อนกลับ</tspan></text>
+    <path id="chevron-left-solid" d="M28.065,54.056,43.887,38.235a1.954,1.954,0,0,1,2.763,0L48.5,40.08a1.954,1.954,0,0,1,0,2.76l-12.54,12.6L48.5,68.037a1.953,1.953,0,0,1,0,2.76L46.65,72.642a1.954,1.954,0,0,1-2.763,0L28.065,56.82A1.954,1.954,0,0,1,28.065,54.056Z" transform="translate(-7.492 -9.529)" fill="#fff"/>
+  </g>
+</svg>
