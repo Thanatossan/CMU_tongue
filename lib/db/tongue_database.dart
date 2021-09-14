@@ -138,6 +138,7 @@ CREATE TABLE $tableTongueTest (
     } else {
       return User(
           name: "", surname: "", gender: "", age: 0, createAt: DateTime.now());
+
     }
   }
 
@@ -178,6 +179,5 @@ CREATE TABLE $tableTongueTest (
     final result = await db.rawQuery(
         "SELECT *,user.name,user.surname FROM tongueTest INNER JOIN user ON userId = user._id");
     return result;
-
   }
 }

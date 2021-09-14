@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tongue_cmu_bluetooth/screen/splash/splash_screen.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 void main() {
   runApp(MyApp());
 }
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: SplashScreen(),
+      builder: EasyLoading.init(),
     );
   }
 }

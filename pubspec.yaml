@@ -38,6 +38,14 @@ dependencies:
   flutter_countdown_timer: ^4.1.0
   path_provider: ^2.0.2
   flutter_launcher_icons: ^0.9.1
+  flutter_easyloading: ^3.0.3
+  sqflite_porter:
+    git:
+      url: git://github.com/tekartik/sqflite_more
+      ref: null_safety
+      path: sqflite_porter
+    version: '>=0.2.0'
+  csv: ^5.0.0
 flutter_icons:
   android: true
   ios: true

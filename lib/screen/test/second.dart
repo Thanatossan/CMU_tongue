@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:async';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -11,6 +12,7 @@ import 'package:tongue_cmu_bluetooth/model/user.dart';
 import 'package:tongue_cmu_bluetooth/model/tongueTest.dart';
 import 'dart:typed_data';
 import 'package:tongue_cmu_bluetooth/global-variable.dart' as globals;
+import 'package:tongue_cmu_bluetooth/screen/main/main_screen.dart';
 class SecondTestScreen extends StatelessWidget {
   final User user;
   const SecondTestScreen({
@@ -22,6 +24,12 @@ class SecondTestScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: mPrimaryColor,
+          leading:  new IconButton(
+          icon: new Icon(Icons.arrow_back),
+      onPressed: () => Navigator.push(
+          context,MaterialPageRoute(builder: (context) => MainScreen(user:globals.user))
+      ),
+    ),
         actions: <Widget>[
           Padding(
               padding: EdgeInsets.all(15),
@@ -71,7 +79,7 @@ class StatefulComponent extends StatefulWidget {
 
 class _StatefulComponentState extends State<StatefulComponent> {
 
-  bool isStartMeasure = false;
+
 
   static final clientID = 0;
   BluetoothConnection? connection;
@@ -89,6 +97,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
   String stringMessage = "";
   double newton = 0.0;
   double pressure = 0.0;
+  double endPressure= 0.0;
   double endNewton = 0.0;
   bool changeToTimer = false;
   late Timer _timer ;
@@ -98,6 +107,8 @@ class _StatefulComponentState extends State<StatefulComponent> {
   double maxNewton  = 0.0;
   double maxPressure = 0.0;
   int _start = 3;
+  int countTime = 0;
+  bool isStartMeasure = false;
   Future createTest() async{
     final tongueTest = TongueTest(userId: globals.user.id, time: DateTime.now(), type: "ความแข็งแกร่ง", newton: maxNewton, kiloPascal: maxPressure);
     await TongueDatabase.instance.addTest(tongueTest);
@@ -112,7 +123,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
           setState(() {
             timer.cancel();
             maxNewton = listNewton.reduce(max);
-            maxPressure = listNewton.reduce(max);
+            maxPressure = listPressure.reduce(max);
             isStartMeasure = false;
             createTest();
 
@@ -129,10 +140,14 @@ class _StatefulComponentState extends State<StatefulComponent> {
       },
     );
   }
+
   @override
   void initState() {
     super.initState();
-
+    connectDevice();
+  }
+  void connectDevice() async{
+    await EasyLoading.show();
     BluetoothConnection.toAddress(widget.server.address).then((_connection) {
       print('Connected to the device');
       connection = _connection;
@@ -140,7 +155,6 @@ class _StatefulComponentState extends State<StatefulComponent> {
         isConnecting = false;
         isDisconnecting = false;
       });
-
       connection!.input!.listen(_onDataReceived).onDone(() {
         // Example: Detect which side closed the connection
         // There should be `isDisconnecting` flag to show are we are (locally)
@@ -161,6 +175,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
       print('Cannot connect, exception occured');
       print(error);
     });
+    await EasyLoading.dismiss();
   }
   @override
   void dispose() {
@@ -254,27 +269,45 @@ class _StatefulComponentState extends State<StatefulComponent> {
     return Column(
       children: [
         Container(
-            height: 250,
-            width: 250,
+            height: 300,
+            width: 300,
             child: SfRadialGauge(
               axes: <RadialAxis>[
 
-                RadialAxis(minimum: 0.00,maximum: 0.1,
+                RadialAxis(minimum: 0.00,maximum: 30,
                   ranges: <GaugeRange>[
-                    GaugeRange(startValue: 0.00, endValue: 0.1,color: Colors.grey)
+                    GaugeRange(startValue: 0.00, endValue: 0,color: Colors.grey)
                   ],
                   pointers: <GaugePointer>[
                     isStartMeasure ?
-                    NeedlePointer(value:newton,enableAnimation: true):
-                    NeedlePointer(value:endNewton),
+                    MarkerPointer(value:newton,enableAnimation: true):
+                    MarkerPointer(value:endNewton),
                     isStartMeasure ?
-                    RangePointer(value: newton,enableAnimation: true):
-                    RangePointer(value: endNewton)
+                    MarkerPointer(value: newton,enableAnimation: true):
+                    MarkerPointer(value: endNewton)
+                  ],
+                ),
+                RadialAxis(minimum: 0.00,maximum: 500,
+                  radiusFactor: 0.5,
+                  ranges: <GaugeRange>[
+                    GaugeRange(startValue: 0.00, endValue: 0,color: Colors.grey)
+                  ],
+                  pointers: <GaugePointer>[
+                    isStartMeasure ?
+                    MarkerPointer(value:pressure,enableAnimation: true):
+                    MarkerPointer(value:endPressure),
+                    isStartMeasure ?
+                    MarkerPointer(value: pressure,enableAnimation: true ):
+                    MarkerPointer(value: endPressure)
                   ],
                 )
+
               ],
             )
         ),
+        Row(
+            children:[
+
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -288,27 +321,52 @@ class _StatefulComponentState extends State<StatefulComponent> {
               ),
               child: Text(maxNewton.toString(),style: TextStyle(color: mPrimaryColor , fontSize: 25)),
             ),
-            Text("นิวตัน",style: TextStyle(color: mPrimaryColor , fontSize: 25))
+            Text("นิวตัน",style: TextStyle(color: mPrimaryColor , fontSize: 20))
           ],
         ),
-        SizedBox(width: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(5.0),
-              padding: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                  border: Border.all(color: mPrimaryColor,width: 3),
-                  borderRadius: BorderRadius.all(Radius.circular(5.0))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(5.0),
+                decoration: BoxDecoration(
+                    border: Border.all(color: mPrimaryColor,width: 3),
+                    borderRadius: BorderRadius.all(Radius.circular(5.0))
+                ),
+                child: Text(maxPressure.toString(),style: TextStyle(color: mPrimaryColor , fontSize: 25)),
               ),
-              child: Text(maxPressure.toString(),style: TextStyle(color: mPrimaryColor , fontSize: 25)),
-            ),
-            Text("กิโลปาสคาล",style: TextStyle(color: mPrimaryColor , fontSize: 25)),
+              Text("กิโลปาสคาล",style: TextStyle(color: mPrimaryColor , fontSize: 20)),
 
-          ],
+            ],
+          ),]
         ),
 
+        Row(
+          children: [
+            Text("ตั้งเวลา",style: TextStyle(color: mPrimaryColor , fontSize: 30)),
+            Flexible(
+                child:TextFormField(
+                  keyboardType: TextInputType.number,
+                  onChanged: (val){
+                    setState(() {
+                      countTime = int.parse(val);
+                    });
+                  },
+                  // The validator receives the text that the user has entered.
+                  decoration: InputDecoration(
+                  ),
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                )
+            ),
+            Text("วินาที",style: TextStyle(color: mPrimaryColor , fontSize: 30))
+          ],
+        ),
         Container(
           margin: const EdgeInsets.fromLTRB(0,13,0,0),
           constraints: BoxConstraints.tightFor(width: 250, height: 70),
@@ -316,11 +374,11 @@ class _StatefulComponentState extends State<StatefulComponent> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("เหลือเวลา",style: TextStyle(color: mSecondaryColor , fontSize: 30)),
+              Text("เหลือเวลา",style: TextStyle(color: mSecondaryColor , fontSize: 25)),
               SizedBox(width: 15),
               Text(_start.toString(),style: TextStyle(color: mSecondaryColor , fontSize: 30)),
               SizedBox(width: 15),
-              Text("วินาที",style: TextStyle(color: mSecondaryColor , fontSize: 30))
+              Text("วินาที",style: TextStyle(color: mSecondaryColor , fontSize: 25))
             ],
           ):
           ElevatedButton(
@@ -335,12 +393,12 @@ class _StatefulComponentState extends State<StatefulComponent> {
               onPressed: () {
                 setState(() {
                   globals.changeToText = true;
-                  _start = 3;
+                  _start = countTime;
                   startTimer();
                 });
               },
-
-              child: Text("เริ่มต้น",style: TextStyle(color: Colors.white , fontSize: 25))
+              child:
+      Text("เริ่มต้น",style: TextStyle(color: Colors.white , fontSize: 25)),
           )
     )
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:sqflite_porter/utils/csv_utils.dart';
 import 'package:tongue_cmu_bluetooth/screen/register/register_screen.dart';
 import 'package:tongue_cmu_bluetooth/screen/main/main_screen.dart';
 import 'package:tongue_cmu_bluetooth/constant.dart';
@@ -19,17 +20,25 @@ class _HomeScreenState extends State<HomeScreen> {
   void exportUserData() async{
 
     final userData = await TongueDatabase.instance.exportUserData();
+    var csvUser = mapListToCsv(userData);
     String? path = await externalPath();
     print(path);
     final File file = File('$path/userData.csv');
-    await file.writeAsString(userData.toString());
+    globals.pathUser = path!+'/userData.csv';
+    await file.writeAsString(csvUser!);
+    print(userData.toString());
     print("export userData");
   }
   void exportTestData() async{
     final testData  =await TongueDatabase.instance.exportTestData();
+    var csvTest = mapListToCsv(testData);
+    // print(testData.type);
     String? path = await externalPath();
+    print(path);
+    globals.pathTest = path!+'/testData.csv';
+    print(testData.toString());
     final File file = File('$path/testData.csv');
-    await file.writeAsString(testData.toString());
+    await file.writeAsString(csvTest!);
     print("export testData");
   }
   Future<String?> externalPath() async {
@@ -54,6 +63,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         ))),
                 onPressed: () {
                   exportUserData();
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      content: Text('บันทึกไฟล์ไว้ที่ ' + globals.pathUser ),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 child: Text('นำออกข้อมูลผู้ใข้งาน'),
               ),
@@ -69,6 +90,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         ))),
                 onPressed: () {
                   exportTestData();
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      content: Text('บันทึกไฟล์ไว้ที่ ' + globals.pathTest),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 child: Text('นำออกข้อมูลทดสอบ'),
               ),
@@ -168,7 +201,6 @@ class _HomeFormState extends State<HomeForm> {
             }
             return "";
           })()),
-          // Text("hi"),
           Center(
               child: Container(
             padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
@@ -206,10 +238,6 @@ class _HomeFormState extends State<HomeForm> {
           MaterialPageRoute(builder: (context) => MainScreen(user: globals.user)),
         );
       }
-      // else {
-      //   Navigator.of(context).pop();
-      //   _loginFail = true;
-      // }
     }
   }
 }

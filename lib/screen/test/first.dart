@@ -1,5 +1,5 @@
 import 'dart:ffi';
-
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -70,7 +70,7 @@ class StatefulComponent extends StatefulWidget {
 }
 
 class _StatefulComponentState extends State<StatefulComponent> {
-  bool isStartMeasure = false;
+  bool isStartMeasure = true; //always start when start this page
 
   static final clientID = 0;
   BluetoothConnection? connection;
@@ -93,6 +93,10 @@ class _StatefulComponentState extends State<StatefulComponent> {
   void initState() {
     super.initState();
 
+    connectDevice();
+  }
+  void connectDevice() async{
+    await EasyLoading.show();
     BluetoothConnection.toAddress(widget.server.address).then((_connection) {
       print('Connected to the device');
       connection = _connection;
@@ -100,7 +104,6 @@ class _StatefulComponentState extends State<StatefulComponent> {
         isConnecting = false;
         isDisconnecting = false;
       });
-
       connection!.input!.listen(_onDataReceived).onDone(() {
         // Example: Detect which side closed the connection
         // There should be `isDisconnecting` flag to show are we are (locally)
@@ -121,6 +124,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
       print('Cannot connect, exception occured');
       print(error);
     });
+    await EasyLoading.dismiss();
   }
   @override
   void dispose() {
@@ -219,9 +223,9 @@ class _StatefulComponentState extends State<StatefulComponent> {
             child: SfRadialGauge(
               axes: <RadialAxis>[
 
-                RadialAxis(minimum: 0.00,maximum: 0.1,
+                RadialAxis(minimum: 0.00,maximum: 30,
                   ranges: <GaugeRange>[
-                    GaugeRange(startValue: 0.00, endValue: 0.1,color: Colors.grey)
+                    GaugeRange(startValue: 0.00, endValue: 30,color: Colors.grey)
                   ],
                   pointers: <GaugePointer>[
                     isStartMeasure ?
@@ -252,30 +256,30 @@ class _StatefulComponentState extends State<StatefulComponent> {
             Text("นิวตัน",style: TextStyle(color: mPrimaryColor , fontSize: 25))
           ],
         ),
-          Container(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          constraints: BoxConstraints.tightFor(width: 250, height: 110),
-          child:ElevatedButton(
-          style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.0),
-          )
-          )
-          ),
-          onPressed: () {
-          isStartMeasure = !isStartMeasure;
-          if(!isStartMeasure){
-            endNewton = newton;
-          }
-          },
-
-    child: !isStartMeasure ?
-    Text("เริ่มต้น",style: TextStyle(color: Colors.white , fontSize: 25)):
-    Text("หยุด",style: TextStyle(color: Colors.white , fontSize: 25)),
-    ),
-      )
+    //       Container(
+    //       padding: const EdgeInsets.symmetric(vertical: 16.0),
+    //       constraints: BoxConstraints.tightFor(width: 250, height: 110),
+    //       child:ElevatedButton(
+    //       style: ButtonStyle(
+    //       backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
+    //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    //       RoundedRectangleBorder(
+    //       borderRadius: BorderRadius.circular(18.0),
+    //       )
+    //       )
+    //       ),
+    //       onPressed: () {
+    //       isStartMeasure = !isStartMeasure;
+    //       if(!isStartMeasure){
+    //         endNewton = newton;
+    //       }
+    //       },
+    //
+    // child: !isStartMeasure ?
+    // Text("เริ่ม",style: TextStyle(color: Colors.white , fontSize: 25)):
+    // Text("หยุด",style: TextStyle(color: Colors.white , fontSize: 25)),
+    // ),
+    //   )
       ],
     );
   }

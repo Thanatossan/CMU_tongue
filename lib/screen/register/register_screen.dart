@@ -72,6 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Flexible(
                         child:TextFormField(
+                          keyboardType: TextInputType.number,
                           onChanged: (val){
                             setState(() {
                               age = int.parse(val);

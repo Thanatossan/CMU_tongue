@@ -1,7 +1,5 @@
 
-import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:tongue_cmu_bluetooth/screen/test/first.dart';
 import 'package:tongue_cmu_bluetooth/constant.dart';
@@ -10,7 +8,7 @@ import 'package:tongue_cmu_bluetooth/screen/test/second.dart';
 import 'package:tongue_cmu_bluetooth/screen/test/third.dart';
 import 'package:tongue_cmu_bluetooth/model/user.dart';
 import 'package:tongue_cmu_bluetooth/screen/bluetooth/bluetooth_setting.dart';
-
+import 'package:tongue_cmu_bluetooth/global-variable.dart' as globals;
 class MainScreen extends StatelessWidget {
   final User user;
   const MainScreen({
@@ -21,6 +19,10 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: mPrimaryColor,
+      leading:  new IconButton(
+        icon: new Icon(Icons.arrow_back),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
       actions: [
           Padding(
           padding: EdgeInsets.all(15),
@@ -43,10 +45,23 @@ class MainScreen extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FirstTestScreen(user: user)),
-                );
+                if(globals.isConnected){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FirstTestScreen(user: user)),
+                  );
+                }
+                else{
+                  AlertDialog(
+                    content: Text('กรุณา Connect Device' ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'OK'),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                }
               }, // handle your image tap here
               child: Image.asset(
                 'assets/images/testButton.png',
@@ -57,10 +72,23 @@ class MainScreen extends StatelessWidget {
             SizedBox(height: 20),
             GestureDetector(
               onTap: () {
+                if(globals.isConnected){
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SecondTestScreen(user: user)),
                 );
+              }
+              else{
+                AlertDialog(
+                  content: Text('กรุณา Connect Device' ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              }
               }, // handle your image tap here
               child: Image.asset(
                 'assets/images/test_strength.png',
@@ -71,10 +99,23 @@ class MainScreen extends StatelessWidget {
             SizedBox(height: 20),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ThirdTestScreen(user: user)),
-                );
+                if(globals.isConnected){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ThirdTestScreen(user: user)),
+                  );
+                }
+                else{
+                  AlertDialog(
+                    content: Text('กรุณา Connect Device' ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'OK'),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                }
               }, // handle your image tap here
               child: Image.asset(
                 'assets/images/testTolerance.png',
@@ -117,7 +158,7 @@ class _ButtonAppBluetoothState extends State<ButtonAppBluetooth> {
             child: Icon(Icons.bluetooth, color: Colors.white),
           ),
 
-          Text("สถานะเชื่อมต่อ Bluetooth :",
+          Text("สถานะ Bluetooth :",
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -137,26 +178,10 @@ class _ButtonAppBluetoothState extends State<ButtonAppBluetooth> {
                   MaterialPageRoute(builder: (context) => BluetoothSetting()),
                 );
               },
-              child: Text('ตั้งค่า'),
+
+              child: globals.isConnected? Text('เชื่อมต่อแล้ว'):Text('ตั้งค่า'),
             ),
-            // child: SwitchListTile(
-            //   title: const Text('Enable Bluetooth'),
-            //   value: _bluetoothState.isEnabled,
-            //   onChanged: (bool value) {
-            //     // Do the request and update with the true value then
-            //     future() async {
-            //       // async lambda seems to not working
-            //       if (value)
-            //         await FlutterBluetoothSerial.instance.requestEnable();
-            //       else
-            //         await FlutterBluetoothSerial.instance.requestDisable();
-            //     }
-            //
-            //     future().then((_) {
-            //       setState(() {});
-            //     });
-            //   },
-            // ),
+
           ),
         ],
       ),
