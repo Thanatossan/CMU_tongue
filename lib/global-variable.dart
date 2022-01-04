@@ -9,5 +9,9 @@ late BluetoothDevice selectedDevice ;
 
 bool isConnected = false;
 bool changeToText = false;
+bool nextButton = false;
+bool canChangeToButton = false;
+int stateCount = 0;
 String pathUser = "";
 String pathTest = "";
+bool startTime = false;

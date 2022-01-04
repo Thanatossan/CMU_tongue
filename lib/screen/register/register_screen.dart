@@ -80,7 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                           // The validator receives the text that the user has entered.
                           decoration: InputDecoration(
-                              border: OutlineInputBorder(), hintText: 'อายุุ' , hintStyle: TextStyle(color: mSecondaryColor)
+                              border: OutlineInputBorder(), hintText: 'อายุ' , hintStyle: TextStyle(color: mSecondaryColor)
                           ),
                           validator: (val) {
                             if (val == null || val.isEmpty) {

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "423947557222",
+    "project_id": "weightbalancecmu-2c727",
+    "storage_bucket": "weightbalancecmu-2c727.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423947557222:android:a063490aa4966dce3050a7",
+        "android_client_info": {
+          "package_name": "com.example.weight_balance_cmu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "423947557222-p6iig1buv836rpk4fqq66tvgct9jgkkk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqTaUCLtASjS-hJIks53hMZknmiLPrSak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "423947557222-p6iig1buv836rpk4fqq66tvgct9jgkkk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sqflite_porter/utils/csv_utils.dart';
+
 import 'package:tongue_cmu_bluetooth/screen/register/register_screen.dart';
 import 'package:tongue_cmu_bluetooth/screen/main/main_screen.dart';
 import 'package:tongue_cmu_bluetooth/constant.dart';
@@ -9,7 +10,8 @@ import 'package:tongue_cmu_bluetooth/model/user.dart';
 import 'package:tongue_cmu_bluetooth/db/tongue_database.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tongue_cmu_bluetooth/global-variable.dart' as globals;
-
+import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,29 +19,60 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  void exportUserData() async{
+  firebase_storage.UploadTask uploadString(String putStringText,String filename) {
+    // Create a Reference to the file
+    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('testData')
+        .child('/'+filename);
 
+    // Start upload of putString
+    return ref.putString(putStringText,
+        metadata: firebase_storage.SettableMetadata(
+            contentLanguage: 'en',
+            customMetadata: <String, String>{'example': 'putString'}));
+  }
+  void exportUserData() async{
+    await EasyLoading.show();
     final userData = await TongueDatabase.instance.exportUserData();
     var csvUser = mapListToCsv(userData);
-    String? path = await externalPath();
-    print(path);
-    final File file = File('$path/userData.csv');
-    globals.pathUser = path!+'/userData.csv';
-    await file.writeAsString(csvUser!);
-    print(userData.toString());
-    print("export userData");
+    // String? path = await externalPath();
+    // print(path);
+    // final File file = File('$path/userData.csv');
+    //
+    // await file.writeAsString(csvUser!);
+    // globals.pathUser = path!+'/userData.csv';
+    // print(userData.toString());
+    // print("export userData");
+    var fileString = csvUser;
+    String filename = "userData.csv";
+    uploadString(fileString.toString(),filename);
+    await EasyLoading.dismiss();
   }
+
   void exportTestData() async{
+    await EasyLoading.show();
     final testData  =await TongueDatabase.instance.exportTestData();
+    final testData2 = await TongueDatabase.instance.exportTest2Data();
     var csvTest = mapListToCsv(testData);
+    var csvTest2 = mapListToCsv(testData2);
     // print(testData.type);
-    String? path = await externalPath();
-    print(path);
-    globals.pathTest = path!+'/testData.csv';
-    print(testData.toString());
-    final File file = File('$path/testData.csv');
-    await file.writeAsString(csvTest!);
+    // String? path = await externalPath();
+    // print(path);
+    // print(testData2.toString());
+    // final File file = File('$path/testData.csv');
+    // final File file2 = File('$path/testData2.csv');
+    // await file.writeAsString(csvTest!);
+    // await file2.writeAsString(csvTest2!);
+    // globals.pathTest = path!+'/testData';
+    var fileString = csvTest;
+    var fileString2 = csvTest2;
+    String filename = "TestData.csv";
+    String filename2 = "TestData2.csv";
+    uploadString(fileString.toString(),filename);
+    uploadString(fileString2.toString(),filename2);
     print("export testData");
+    await EasyLoading.dismiss();
   }
   Future<String?> externalPath() async {
     final dir = await getExternalStorageDirectory();
@@ -50,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(backgroundColor: mPrimaryColor,
+        appBar: AppBar(backgroundColor: mPrimaryColor, automaticallyImplyLeading: false,
           actions: <Widget>[
             Padding(
               padding: EdgeInsets.all(8),
@@ -66,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                      content: Text('บันทึกไฟล์ไว้ที่ ' + globals.pathUser ),
+                      content: Text('อัพโหลดข้อมูลผู้ใช้งานเสร็จสิ้น' ),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () => Navigator.pop(context, 'OK'),
@@ -76,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                child: Text('นำออกข้อมูลผู้ใข้งาน'),
+                child: Text('นำออกข้อมูลผู้ใช้งาน'),
               ),
             ),
             Padding(
@@ -93,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                      content: Text('บันทึกไฟล์ไว้ที่ ' + globals.pathTest),
+                      content: Text('อัพโหลดข้อมูลทดสอบเสร็จสิ้น'),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () => Navigator.pop(context, 'OK'),

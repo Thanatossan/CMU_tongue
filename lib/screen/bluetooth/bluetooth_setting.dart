@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:tongue_cmu_bluetooth/global-variable.dart' as globals;
 import 'package:flutter_svg/svg.dart';
 import 'package:tongue_cmu_bluetooth/screen/main/main_screen.dart';
+
 class BluetoothSetting extends StatefulWidget {
   @override
   _BluetoothSettingState createState() => _BluetoothSettingState();

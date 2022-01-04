@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 // import 'package:tongue_cmu_bluetooth/model/note.dart';
 import 'package:tongue_cmu_bluetooth/model/user.dart';
 import 'package:tongue_cmu_bluetooth/model/tongueTest.dart';
+import 'package:tongue_cmu_bluetooth/model/tongueTest2.dart';
 
 class TongueDatabase {
   static final TongueDatabase instance = TongueDatabase._init();
@@ -24,7 +25,7 @@ class TongueDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 2, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -56,12 +57,30 @@ CREATE TABLE $tableTongueTest (
   FOREIGN KEY (${TongueTestFields.userId}) REFERENCES tableUser(${UserFields.id})
   )
 ''');
+    await db.execute('''
+CREATE TABLE $tableTongueTest2 ( 
+  ${TongueTest2Fields.id} $idType, 
+  ${TongueTest2Fields.userId} $integerType,
+  ${TongueTest2Fields.time} $textType,
+  ${TongueTest2Fields.type} $textType,
+  ${TongueTest2Fields.setNewton} $floatType,
+  ${TongueTest2Fields.setKiloPascal} $floatType,
+  ${TongueTest2Fields.duration} $integerType,
+  FOREIGN KEY (${TongueTest2Fields.userId}) REFERENCES tableUser(${UserFields.id})
+  )
+''');
   }
 
   Future<TongueTest> addTest(TongueTest tongueTest) async{
     final db = await instance.database;
     final id = await db.insert(tableTongueTest, tongueTest.toJson());
     return tongueTest.copy(id:id);
+  }
+
+  Future<TongueTest2> addTest2(TongueTest2 tongueTest2) async{
+    final db = await instance.database;
+    final id = await db.insert(tableTongueTest2, tongueTest2.toJson());
+    return tongueTest2.copy(id:id);
   }
   // Future<TongueTest> readMaxTest(int userId) async {
   //   final db = await instance.database;
@@ -180,4 +199,11 @@ CREATE TABLE $tableTongueTest (
         "SELECT *,user.name,user.surname FROM tongueTest INNER JOIN user ON userId = user._id");
     return result;
   }
+  Future exportTest2Data() async{
+    final db = await instance.database;
+    final result = await db.rawQuery(
+        "SELECT *,user.name,user.surname FROM tongueTest2 INNER JOIN user ON userId = user._id");
+    return result;
+  }
+
 }

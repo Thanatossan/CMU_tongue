@@ -5,23 +5,32 @@ import 'package:tongue_cmu_bluetooth/screen/test/first.dart';
 import 'package:tongue_cmu_bluetooth/constant.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tongue_cmu_bluetooth/screen/test/second.dart';
+import 'package:tongue_cmu_bluetooth/screen/home/home_screen.dart';
 import 'package:tongue_cmu_bluetooth/screen/test/third.dart';
 import 'package:tongue_cmu_bluetooth/model/user.dart';
 import 'package:tongue_cmu_bluetooth/screen/bluetooth/bluetooth_setting.dart';
 import 'package:tongue_cmu_bluetooth/global-variable.dart' as globals;
+import 'package:tongue_cmu_bluetooth/model/user.dart';
 class MainScreen extends StatelessWidget {
   final User user;
   const MainScreen({
     Key? key,
     required this.user
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: mPrimaryColor,
+        // automaticallyImplyLeading: false,
       leading:  new IconButton(
         icon: new Icon(Icons.arrow_back),
-        onPressed: () => Navigator.of(context).pop(),
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => HomeScreen())
+          );
+        }
+        ,
       ),
       actions: [
           Padding(

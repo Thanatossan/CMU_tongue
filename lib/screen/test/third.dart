@@ -9,6 +9,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:tongue_cmu_bluetooth/db/tongue_database.dart';
 import 'package:tongue_cmu_bluetooth/model/user.dart';
 import 'package:tongue_cmu_bluetooth/model/tongueTest.dart';
+import 'package:tongue_cmu_bluetooth/model/tongueTest2.dart';
 import 'dart:typed_data';
 import 'package:tongue_cmu_bluetooth/global-variable.dart' as globals;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -103,25 +104,30 @@ class _StatefulComponentState extends State<StatefulComponent> {
   double maxPressure = 0.0;
   int _start = 0;
   double setNewton = 0.0;
+  double setPressure = 0.0;
+  int duration = 0;
   int _finish = 0;
   Future createTest() async{
-    final tongueTest = TongueTest(userId: globals.user.id, time: DateTime.now(), type: "ความทนทาน", newton: maxNewton, kiloPascal: maxPressure);
-    await TongueDatabase.instance.addTest(tongueTest);
-    return tongueTest;
+    final tongueTest2 = TongueTest2(userId: globals.user.id, time: DateTime.now(), type: "ความทนทาน", setNewton: setNewton, setKiloPascal: setPressure,duration: _start );
+    await TongueDatabase.instance.addTest2(tongueTest2);
+    return tongueTest2;
   }
+
   void startTimer() {
+
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
       oneSec,
           (Timer timer) {
-        if (newton > maxNewton) {
+
+        if (newton < maxNewton || pressure < maxPressure) {
           setState(() {
             timer.cancel();
             isStartMeasure = false;
             createTest();
-
           });
           globals.changeToText = false;
+          // globals.canChangeToButton = true;
         } else {
           setState(() {
             isStartMeasure = true;
@@ -131,12 +137,13 @@ class _StatefulComponentState extends State<StatefulComponent> {
       },
     );
   }
-  Future getMaxTest() async{
-    // tongueTest = await TongueDatabase.instance.getMaxTest(globals.user.id!.toInt());
-    // maxNewton = tongueTest.newton/2;
-    // maxPressure = tongueTest.kiloPascal/2;
-    maxNewton = setNewton/2;
-  }
+  // Future getMaxTest() async{
+  //   // tongueTest = await TongueDatabase.instance.getMaxTest(globals.user.id!.toInt());
+  //   // maxNewton = tongueTest.newton/2;
+  //   // maxPressure = tongueTest.kiloPascal/2;
+  //   maxNewton = setNewton/2;
+  //   maxPressure = setNewton/2 *0.001;
+  // }
   @override
   void initState() {
 
@@ -150,6 +157,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
     BluetoothConnection.toAddress(widget.server.address).then((_connection) {
       print('Connected to the device');
       connection = _connection;
+
       setState(() {
         isConnecting = false;
         isDisconnecting = false;
@@ -179,13 +187,16 @@ class _StatefulComponentState extends State<StatefulComponent> {
   @override
   void dispose() {
     // Avoid memory leak (`setState` after dispose) and disconnect
+
     if (isConnected) {
       isDisconnecting = true;
       connection?.dispose();
       _timer.cancel();
       connection = null;
     }
+
     super.dispose();
+
   }
   void _onDataReceived(Uint8List data) {
     // Allocate buffer for parsed data
@@ -240,10 +251,15 @@ class _StatefulComponentState extends State<StatefulComponent> {
 
         if(stringMessage.length<50){
           print(stringMessage);
-
-          newton = double.parse(stringMessage.substring(11,15));
+          try{
+            newton = double.parse(stringMessage.substring(11,15));
+            pressure = double.parse(stringMessage.substring(30,34));
+          }
+          catch(e){
+            newton = newton;
+            pressure = pressure;
+          }
           print(newton);
-          pressure = double.parse(stringMessage.substring(30,34));
           print(pressure);
         }
 
@@ -274,30 +290,28 @@ class _StatefulComponentState extends State<StatefulComponent> {
                 axes: <RadialAxis>[
 
                   RadialAxis(minimum: 0.00,maximum: 30,
+                    axisLabelStyle: GaugeTextStyle(fontSize: 20),
                     ranges: <GaugeRange>[
-                      GaugeRange(startValue: 0.00, endValue: 0,color: Colors.grey)
+                      GaugeRange(startValue: setNewton, endValue: 30,color: mPrimaryColor)
                     ],
                     pointers: <GaugePointer>[
+                      RangePointer(value: setNewton,color:Colors.grey),
                       isStartMeasure ?
-                      MarkerPointer(value:newton,enableAnimation: true):
-                      MarkerPointer(value:maxNewton),
-                      isStartMeasure ?
-                      MarkerPointer(value: newton,enableAnimation: true):
-                      MarkerPointer(value: maxNewton)
+                      MarkerPointer(value:newton,color:mSecondaryColor,markerOffset: -10,markerWidth: 25,markerHeight: 25):
+                      MarkerPointer(value:0,color:mSecondaryColor,markerOffset: -10,markerWidth: 20,markerHeight: 20)
                     ],
                   ),
                   RadialAxis(minimum: 0.00,maximum: 100,
-                    radiusFactor: 0.5,
+                    axisLabelStyle: GaugeTextStyle(fontSize: 14),
+                    radiusFactor: 0.55,
                     ranges: <GaugeRange>[
-                      GaugeRange(startValue: 0.00, endValue: 0,color: Colors.grey)
+                      GaugeRange(startValue: setPressure, endValue: 100,color: mPrimaryColor)
                     ],
                     pointers: <GaugePointer>[
+                      RangePointer(value: setPressure,color:Colors.grey),
                       isStartMeasure ?
-                      MarkerPointer(value:pressure,enableAnimation: true):
-                      MarkerPointer(value:maxPressure),
-                      isStartMeasure ?
-                      MarkerPointer(value: pressure,enableAnimation: true ):
-                      MarkerPointer(value: maxPressure)
+                      MarkerPointer(value:pressure,color:mSecondaryColor,markerOffset: -10,markerWidth: 25,markerHeight: 25):
+                      MarkerPointer(value:0,color:mSecondaryColor,markerOffset: -10,markerWidth: 25,markerHeight: 25)
                     ],
                   )
 
@@ -323,7 +337,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
           ),
           Row(
             children: [
-              Text("ตั้งค่า",style: TextStyle(color: mPrimaryColor , fontSize: 30)),
+              Text("ตั้งค่า",style: TextStyle(color: mPrimaryColor , fontSize: 20)),
               Flexible(
                   child:TextFormField(
                     keyboardType: TextInputType.number,
@@ -343,44 +357,75 @@ class _StatefulComponentState extends State<StatefulComponent> {
                     },
                   )
               ),
-              Text("นิวตันสูงสุด",style: TextStyle(color: mPrimaryColor , fontSize: 30))
+              Text("นิวตัน หรือ",style: TextStyle(color: mPrimaryColor , fontSize: 20))
+              ,Flexible(
+                  child:TextFormField(
+                    keyboardType: TextInputType.number,
+                    onChanged: (val){
+                      setState(() {
+                        setPressure = double.parse(val);
+                      });
+                    },
+                    // The validator receives the text that the user has entered.
+                    decoration: InputDecoration(
+                    ),
+                    validator: (val) {
+                      if (val == null || val.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  )
+              ),
+              Text("กิโลปาสคาล",style: TextStyle(color: mPrimaryColor , fontSize: 20))
             ],
           ),
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(5.0),
-                decoration: BoxDecoration(
-                    border: Border.all(color: mPrimaryColor,width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))
-                ),
-                child: Text(maxNewton.toString(),style: TextStyle(color: mPrimaryColor , fontSize: 25)),
-              ),
-              Text("นิวตัน",style: TextStyle(color: mPrimaryColor , fontSize: 20))
+            children:  [
+              Text("ทำเวลาได้",style: TextStyle(color: mSecondaryColor , fontSize: 25)),
+              SizedBox(width: 15),
+              Text(_start.toString(),style: TextStyle(color: mSecondaryColor , fontSize: 25)),
+              SizedBox(width: 15),
+              Text("วินาที",style: TextStyle(color: mSecondaryColor , fontSize: 25))
             ],
-          ),Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(5.0),
-                    padding: const EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: mPrimaryColor,width: 3),
-                        borderRadius: BorderRadius.all(Radius.circular(5.0))
-                    ),
-                    child: Text(maxPressure.toString(),style: TextStyle(color: mPrimaryColor , fontSize: 25)),
-                  ),
-                  Text("กิโลปาสคาล",style: TextStyle(color: mPrimaryColor , fontSize: 20)),
-
-                ],
-              ),
-            ]
           ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Container(
+          //       margin: const EdgeInsets.all(5.0),
+          //       padding: const EdgeInsets.all(5.0),
+          //       decoration: BoxDecoration(
+          //           border: Border.all(color: mPrimaryColor,width: 3),
+          //           borderRadius: BorderRadius.all(Radius.circular(5.0))
+          //       ),
+          //       child: Text(maxNewton.toString(),style: TextStyle(color: mPrimaryColor , fontSize: 25)),
+          //     ),
+          //     Text("นิวตัน",style: TextStyle(color: mPrimaryColor , fontSize: 20))
+          //   ],
+          // ),Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Container(
+          //           margin: const EdgeInsets.all(5.0),
+          //           padding: const EdgeInsets.all(5.0),
+          //           decoration: BoxDecoration(
+          //               border: Border.all(color: mPrimaryColor,width: 3),
+          //               borderRadius: BorderRadius.all(Radius.circular(5.0))
+          //           ),
+          //           child: Text(maxPressure.toString(),style: TextStyle(color: mPrimaryColor , fontSize: 25)),
+          //         ),
+          //         Text("กิโลปาสคาล",style: TextStyle(color: mPrimaryColor , fontSize: 20)),
+          //
+          //       ],
+          //     ),
+          //   ]
+          // ),
 
           SizedBox(width: 30),
 
@@ -389,16 +434,21 @@ class _StatefulComponentState extends State<StatefulComponent> {
               margin: const EdgeInsets.fromLTRB(0,13,0,0),
               constraints: BoxConstraints.tightFor(width: 250, height: 70),
               child:globals.changeToText ?
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("เหลือเวลา",style: TextStyle(color: mSecondaryColor , fontSize: 30)),
-                  SizedBox(width: 15),
-                  Text(_start.toString(),style: TextStyle(color: mSecondaryColor , fontSize: 30)),
-                  SizedBox(width: 15),
-                  Text("วินาที",style: TextStyle(color: mSecondaryColor , fontSize: 30))
-                ],
-              ):
+              ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(mThirdColor),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          )
+                      )
+                  ),
+                  onPressed: () {
+                  },
+
+                  child: Text("เริ่มต้น",style: TextStyle(color: Colors.white , fontSize: 25))
+              )
+                  :
               ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
@@ -409,11 +459,18 @@ class _StatefulComponentState extends State<StatefulComponent> {
                       )
                   ),
                   onPressed: () {
-                    getMaxTest();
+                    // getMaxTest();
                     setState(() {
                       globals.changeToText = true;
                       _start = 0;
+
                       startTimer();
+                      if(setNewton>0) {
+                        maxNewton = setNewton;
+                      }
+                      if(setPressure > 0){
+                        maxPressure = setPressure;
+                      }
                     });
                   },
 
@@ -431,112 +488,3 @@ class _StatefulComponentState extends State<StatefulComponent> {
 
 
 
-
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/svg.dart';
-// import 'package:syncfusion_flutter_gauges/gauges.dart';
-// import 'package:tongue_cmu_bluetooth/constant.dart';
-// class ThirdTestScreen extends StatefulWidget {
-//   @override
-//   _ThirdTestScreenState createState() => _ThirdTestScreenState();
-// }
-//
-// class _ThirdTestScreenState extends State<ThirdTestScreen> {
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(backgroundColor: mPrimaryColor),
-//       body: Container(
-//           padding: const EdgeInsets.fromLTRB(32,20,32,0),
-//           child: Container(
-//               child:Column(
-//                 children: [
-//                   Row(
-//                     children: [
-//                       SvgPicture.asset('assets/images/stopwatch-solid.svg',fit: BoxFit.cover, // this is the solution for border
-//                           width: 80),
-//                       SizedBox(width: 30),
-//                       Flexible(child: Text("วัดความทดทาน",style: TextStyle(color: mPrimaryColor , fontSize: 28)))
-//                     ],
-//                   ),
-//                   SizedBox(height: 30)
-//                   ,
-//                   Container(
-//                       height: 300,
-//                       width: 300,
-//                       child: SfRadialGauge(
-//                         axes: <RadialAxis>[
-//
-//                           RadialAxis(minimum: 0,maximum: 150,
-//                             ranges: <GaugeRange>[
-//                               GaugeRange(startValue: 0, endValue: 150,color: Colors.grey)
-//                             ],
-//                             pointers: <GaugePointer>[
-//                               NeedlePointer(value:0)
-//                             ],
-//                           )
-//                         ],
-//                       )
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       Container(
-//
-//                         margin: const EdgeInsets.all(10.0),
-//                         padding: const EdgeInsets.all(5.0),
-//                         decoration: BoxDecoration(
-//                             border: Border.all(color: mPrimaryColor,width: 3),
-//                             borderRadius: BorderRadius.all(Radius.circular(5.0))
-//                         ),
-//                         child: Text('0',style: TextStyle(color: mPrimaryColor , fontSize: 25)),
-//                       ),
-//                       Text("นิวตัน",style: TextStyle(color: mPrimaryColor , fontSize: 25))
-//                     ],
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       Container(
-//                         margin: const EdgeInsets.all(10.0),
-//                         padding: const EdgeInsets.all(5.0),
-//                         decoration: BoxDecoration(
-//                             border: Border.all(color: mPrimaryColor,width: 3),
-//                             borderRadius: BorderRadius.all(Radius.circular(5.0))
-//                         ),
-//                         child: Text('0',style: TextStyle(color: mPrimaryColor , fontSize: 25)),
-//                       ),
-//                       Text("กิโลปาสคาล",style: TextStyle(color: mPrimaryColor , fontSize: 25))
-//                     ],
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       Text("เวลาที่ทำได้",style: TextStyle(color: mSecondaryColor , fontSize: 25)),
-//                       SizedBox(width: 10),
-//                       Container(
-//                         margin: const EdgeInsets.all(10.0),
-//                         padding: const EdgeInsets.all(5.0),
-//                         decoration: BoxDecoration(
-//                             border: Border.all(color: mSecondaryColor,width: 3),
-//                             borderRadius: BorderRadius.all(Radius.circular(5.0))
-//                         ),
-//                         child: Text("100",style: TextStyle(color: mSecondaryColor , fontSize: 25)),
-//                       ),
-//
-//                       Text("วินาที",style: TextStyle(color: mSecondaryColor , fontSize: 25))
-//                     ],
-//                   )
-//                 ],
-//
-//               )
-//
-//
-//           )
-//
-//       ),
-//     );
-//   }
-// }

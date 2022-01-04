@@ -189,10 +189,15 @@ class _StatefulComponentState extends State<StatefulComponent> {
 
         if(stringMessage.length<50){
           print(stringMessage);
-
-          newton = double.parse(stringMessage.substring(11,15));
+          try{
+            newton = double.parse(stringMessage.substring(11,15));
+            pressure = double.parse(stringMessage.substring(30,34));
+          }
+          catch(e){
+            newton = newton;
+            pressure = pressure;
+          }
           print(newton);
-          pressure = double.parse(stringMessage.substring(30,34));
           print(pressure);
         }
 
@@ -224,6 +229,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
               axes: <RadialAxis>[
 
                 RadialAxis(minimum: 0.00,maximum: 30,
+                    axisLabelStyle: GaugeTextStyle(fontSize: 20),
                   ranges: <GaugeRange>[
                     GaugeRange(startValue: 0.00, endValue: 30,color: Colors.grey)
                   ],

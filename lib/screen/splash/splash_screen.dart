@@ -31,14 +31,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return
       Container(
-        padding: EdgeInsets.all(50),
+        padding: EdgeInsets.all(70),
           alignment: AlignmentDirectional.center ,
           color: Colors.white,
           child: Column(
             children: [
               Image.asset('assets/icons/CMU.png'),
               Image.asset('assets/icons/Tongue Strength & Endurance measurement device.png'),
-              SvgPicture.asset('assets/icons/Image 1.svg')
+              Image.asset('assets/icons/icons_tongue.png'),
 
             ],
           )

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tongue_cmu_bluetooth/screen/splash/splash_screen.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 

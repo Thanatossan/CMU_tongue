@@ -24,12 +24,6 @@ class SecondTestScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: mPrimaryColor,
-          leading:  new IconButton(
-          icon: new Icon(Icons.arrow_back),
-      onPressed: () => Navigator.push(
-          context,MaterialPageRoute(builder: (context) => MainScreen(user:globals.user))
-      ),
-    ),
         actions: <Widget>[
           Padding(
               padding: EdgeInsets.all(15),
@@ -185,6 +179,10 @@ class _StatefulComponentState extends State<StatefulComponent> {
       connection?.dispose();
       _timer.cancel();
       connection = null;
+      maxNewton = 0.0;
+      isStartMeasure = false;
+      maxPressure =0.0;
+
     }
     super.dispose();
   }
@@ -241,10 +239,15 @@ class _StatefulComponentState extends State<StatefulComponent> {
 
         if(stringMessage.length<50){
           print(stringMessage);
-
-          newton = double.parse(stringMessage.substring(11,15));
+          try{
+            newton = double.parse(stringMessage.substring(11,15));
+            pressure = double.parse(stringMessage.substring(30,34));
+          }
+          catch(e){
+            newton = newton;
+            pressure = pressure;
+          }
           print(newton);
-          pressure = double.parse(stringMessage.substring(30,34));
           print(pressure);
         }
 
@@ -275,30 +278,32 @@ class _StatefulComponentState extends State<StatefulComponent> {
               axes: <RadialAxis>[
 
                 RadialAxis(minimum: 0.00,maximum: 30,
+                  axisLabelStyle: GaugeTextStyle(fontSize: 20),
                   ranges: <GaugeRange>[
                     GaugeRange(startValue: 0.00, endValue: 0,color: Colors.grey)
                   ],
                   pointers: <GaugePointer>[
                     isStartMeasure ?
-                    MarkerPointer(value:newton,enableAnimation: true):
-                    MarkerPointer(value:endNewton),
+                    MarkerPointer(value:newton,enableAnimation: true,markerOffset: -10,markerWidth: 25,markerHeight: 25):
+                    MarkerPointer(value:endNewton,markerOffset: -10,markerWidth: 25,markerHeight: 25),
                     isStartMeasure ?
-                    MarkerPointer(value: newton,enableAnimation: true):
-                    MarkerPointer(value: endNewton)
+                    MarkerPointer(value: newton,enableAnimation: true,markerOffset: -10,markerWidth: 25,markerHeight: 25):
+                    MarkerPointer(value: endNewton,markerOffset: -10,markerWidth: 25,markerHeight: 25)
                   ],
                 ),
-                RadialAxis(minimum: 0.00,maximum: 500,
-                  radiusFactor: 0.5,
+                RadialAxis(minimum: 0.00,maximum: 100,
+                  axisLabelStyle: GaugeTextStyle(fontSize: 14),
+                  radiusFactor: 0.55,
                   ranges: <GaugeRange>[
-                    GaugeRange(startValue: 0.00, endValue: 0,color: Colors.grey)
+                    GaugeRange(startValue: 0.00, endValue: 100,color: Colors.grey)
                   ],
                   pointers: <GaugePointer>[
                     isStartMeasure ?
-                    MarkerPointer(value:pressure,enableAnimation: true):
-                    MarkerPointer(value:endPressure),
+                    MarkerPointer(value:pressure,enableAnimation: true,markerOffset: -10,markerWidth: 20,markerHeight: 20):
+                    MarkerPointer(value:endPressure,markerOffset: -10,markerWidth: 20,markerHeight: 20),
                     isStartMeasure ?
-                    MarkerPointer(value: pressure,enableAnimation: true ):
-                    MarkerPointer(value: endPressure)
+                    MarkerPointer(value: pressure,enableAnimation: true ,markerOffset: -10,markerWidth: 20,markerHeight: 20):
+                    MarkerPointer(value: endPressure,markerOffset: -10,markerWidth: 20,markerHeight: 20)
                   ],
                 )
 
@@ -350,6 +355,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
                   keyboardType: TextInputType.number,
                   onChanged: (val){
                     setState(() {
+
                       countTime = int.parse(val);
                     });
                   },
@@ -392,6 +398,8 @@ class _StatefulComponentState extends State<StatefulComponent> {
               ),
               onPressed: () {
                 setState(() {
+                  maxNewton = 0;
+                  maxPressure = 0;
                   globals.changeToText = true;
                   _start = countTime;
                   startTimer();
