@@ -44,7 +44,7 @@ class SecondTestScreen extends StatelessWidget {
                       SvgPicture.asset('assets/images/chart-bar-solid.svg',fit: BoxFit.cover, // this is the solution for border
                           width: 80),
                       SizedBox(width: 30),
-                      Flexible(child: Text("วัดความแข็งแกร่ง",style: TextStyle(color: mPrimaryColor , fontSize: 30)))                    ],
+                      Flexible(child: Text("วัดความแข็งแรง",style: TextStyle(color: mPrimaryColor , fontSize: 30)))                    ],
                   ),
                   SizedBox(height: 30),
                   StatefulComponent()
@@ -279,33 +279,20 @@ class _StatefulComponentState extends State<StatefulComponent> {
 
                 RadialAxis(minimum: 0.00,maximum: 30,
                   axisLabelStyle: GaugeTextStyle(fontSize: 20),
+                axisLineStyle: AxisLineStyle(thickness: 0.15,
+                  thicknessUnit: GaugeSizeUnit.factor),
                   ranges: <GaugeRange>[
                     GaugeRange(startValue: 0.00, endValue: 0,color: Colors.grey)
                   ],
                   pointers: <GaugePointer>[
+
                     isStartMeasure ?
-                    MarkerPointer(value:newton,enableAnimation: true,markerOffset: -10,markerWidth: 25,markerHeight: 25):
-                    MarkerPointer(value:endNewton,markerOffset: -10,markerWidth: 25,markerHeight: 25),
-                    isStartMeasure ?
-                    MarkerPointer(value: newton,enableAnimation: true,markerOffset: -10,markerWidth: 25,markerHeight: 25):
-                    MarkerPointer(value: endNewton,markerOffset: -10,markerWidth: 25,markerHeight: 25)
+                    NeedlePointer(value:newton,enableAnimation: true,needleColor: mPrimaryColor,knobStyle: KnobStyle(knobRadius: 10,
+                sizeUnit: GaugeSizeUnit.logicalPixel, color: mPrimaryColor)):
+                    NeedlePointer(value:endNewton,needleColor: mPrimaryColor,knobStyle: KnobStyle(knobRadius: 10,
+                        sizeUnit: GaugeSizeUnit.logicalPixel, color: mPrimaryColor)),
                   ],
                 ),
-                RadialAxis(minimum: 0.00,maximum: 100,
-                  axisLabelStyle: GaugeTextStyle(fontSize: 14),
-                  radiusFactor: 0.55,
-                  ranges: <GaugeRange>[
-                    GaugeRange(startValue: 0.00, endValue: 100,color: Colors.grey)
-                  ],
-                  pointers: <GaugePointer>[
-                    isStartMeasure ?
-                    MarkerPointer(value:pressure,enableAnimation: true,markerOffset: -10,markerWidth: 20,markerHeight: 20):
-                    MarkerPointer(value:endPressure,markerOffset: -10,markerWidth: 20,markerHeight: 20),
-                    isStartMeasure ?
-                    MarkerPointer(value: pressure,enableAnimation: true ,markerOffset: -10,markerWidth: 20,markerHeight: 20):
-                    MarkerPointer(value: endPressure,markerOffset: -10,markerWidth: 20,markerHeight: 20)
-                  ],
-                )
 
               ],
             )
