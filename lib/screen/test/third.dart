@@ -297,23 +297,13 @@ class _StatefulComponentState extends State<StatefulComponent> {
                     pointers: <GaugePointer>[
                       RangePointer(value: setNewton,color:Colors.grey),
                       isStartMeasure ?
-                      MarkerPointer(value:newton,color:mSecondaryColor,markerOffset: -10,markerWidth: 25,markerHeight: 25):
-                      MarkerPointer(value:0,color:mSecondaryColor,markerOffset: -10,markerWidth: 20,markerHeight: 20)
+
+                      NeedlePointer(value:newton,enableAnimation: true,needleColor: mSecondaryColor,knobStyle: KnobStyle(knobRadius: 10,
+                          sizeUnit: GaugeSizeUnit.logicalPixel, color: mSecondaryColor)):
+                      NeedlePointer(value:0,needleColor: mSecondaryColor,knobStyle: KnobStyle(knobRadius: 10,
+                          sizeUnit: GaugeSizeUnit.logicalPixel, color: mSecondaryColor)),
                     ],
                   ),
-                  RadialAxis(minimum: 0.00,maximum: 100,
-                    axisLabelStyle: GaugeTextStyle(fontSize: 14),
-                    radiusFactor: 0.55,
-                    ranges: <GaugeRange>[
-                      GaugeRange(startValue: setPressure, endValue: 100,color: mPrimaryColor)
-                    ],
-                    pointers: <GaugePointer>[
-                      RangePointer(value: setPressure,color:Colors.grey),
-                      isStartMeasure ?
-                      MarkerPointer(value:pressure,color:mSecondaryColor,markerOffset: -10,markerWidth: 25,markerHeight: 25):
-                      MarkerPointer(value:0,color:mSecondaryColor,markerOffset: -10,markerWidth: 25,markerHeight: 25)
-                    ],
-                  )
 
                 ],
                 // axes: <RadialAxis>[

@@ -287,10 +287,10 @@ class _StatefulComponentState extends State<StatefulComponent> {
                   pointers: <GaugePointer>[
 
                     isStartMeasure ?
-                    NeedlePointer(value:newton,enableAnimation: true,needleColor: mPrimaryColor,knobStyle: KnobStyle(knobRadius: 10,
-                sizeUnit: GaugeSizeUnit.logicalPixel, color: mPrimaryColor)):
-                    NeedlePointer(value:endNewton,needleColor: mPrimaryColor,knobStyle: KnobStyle(knobRadius: 10,
-                        sizeUnit: GaugeSizeUnit.logicalPixel, color: mPrimaryColor)),
+                    NeedlePointer(value:newton,enableAnimation: true,needleColor: mSecondaryColor,knobStyle: KnobStyle(knobRadius: 10,
+                sizeUnit: GaugeSizeUnit.logicalPixel, color: mSecondaryColor)):
+                    NeedlePointer(value:endNewton,needleColor: mSecondaryColor,knobStyle: KnobStyle(knobRadius: 10,
+                        sizeUnit: GaugeSizeUnit.logicalPixel, color: mSecondaryColor)),
                   ],
                 ),
 
