@@ -289,10 +289,10 @@ class _StatefulComponentState extends State<StatefulComponent> {
 
                 axes: <RadialAxis>[
 
-                  RadialAxis(minimum: 0.00,maximum: 30,
+                  RadialAxis(minimum: 0.00,maximum: 15,
                     axisLabelStyle: GaugeTextStyle(fontSize: 20),
                     ranges: <GaugeRange>[
-                      GaugeRange(startValue: setNewton, endValue: 30,color: mPrimaryColor)
+                      GaugeRange(startValue: setNewton, endValue: 15,color: mPrimaryColor)
                     ],
                     pointers: <GaugePointer>[
                       RangePointer(value: setNewton,color:Colors.grey),

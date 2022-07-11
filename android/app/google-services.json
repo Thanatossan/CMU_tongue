@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "423947557222",
-    "project_id": "weightbalancecmu-2c727",
-    "storage_bucket": "weightbalancecmu-2c727.appspot.com"
+    "project_number": "958328139960",
+    "project_id": "tonguecmu-4aa05",
+    "storage_bucket": "tonguecmu-4aa05.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:423947557222:android:a063490aa4966dce3050a7",
+        "mobilesdk_app_id": "1:958328139960:android:989bed403a42d1321ec44d",
         "android_client_info": {
-          "package_name": "com.example.weight_balance_cmu"
+          "package_name": "com.example.tongue_cmu_bluetooth"
         }
       },
       "oauth_client": [
         {
-          "client_id": "423947557222-p6iig1buv836rpk4fqq66tvgct9jgkkk.apps.googleusercontent.com",
+          "client_id": "958328139960-7o0fk4iqicesr9t72lmbb4rosm32sorg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tongue_cmu_bluetooth",
+            "certificate_hash": "73ff338f1e1b2af10d5da6ef408689115b6fa2ad"
+          }
+        },
+        {
+          "client_id": "958328139960-sp48q0qokvv9ug03qi58t6crng9n5jnm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDqTaUCLtASjS-hJIks53hMZknmiLPrSak"
+          "current_key": "AIzaSyBvKfm7u1OBzIwx1o1_fb914uRhfKLvOzc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "423947557222-p6iig1buv836rpk4fqq66tvgct9jgkkk.apps.googleusercontent.com",
+              "client_id": "958328139960-sp48q0qokvv9ug03qi58t6crng9n5jnm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

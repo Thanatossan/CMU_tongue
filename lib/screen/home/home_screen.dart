@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:sqflite_porter/utils/csv_utils.dart';
-
+import 'package:sqflite_common_porter/utils/csv_utils.dart';
 import 'package:tongue_cmu_bluetooth/screen/register/register_screen.dart';
 import 'package:tongue_cmu_bluetooth/screen/main/main_screen.dart';
 import 'package:tongue_cmu_bluetooth/constant.dart';

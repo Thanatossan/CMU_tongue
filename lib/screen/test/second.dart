@@ -277,7 +277,7 @@ class _StatefulComponentState extends State<StatefulComponent> {
             child: SfRadialGauge(
               axes: <RadialAxis>[
 
-                RadialAxis(minimum: 0.00,maximum: 30,
+                RadialAxis(minimum: 0.00,maximum: 15,
                   axisLabelStyle: GaugeTextStyle(fontSize: 20),
                 axisLineStyle: AxisLineStyle(thickness: 0.15,
                   thicknessUnit: GaugeSizeUnit.factor),

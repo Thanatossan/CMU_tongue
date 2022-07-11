@@ -18,14 +18,14 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.16.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   #bluetooth
   scoped_model: ^2.0.0-nullsafety.0
-  syncfusion_flutter_gauges: ^19.2.49
+  syncfusion_flutter_gauges: ^20.1.61
   # database storage
   sqflite: ^2.0.0+3
   flutter_svg: ^0.22.0
@@ -38,12 +38,12 @@ dependencies:
   flutter_countdown_timer: ^4.1.0
   path_provider: ^2.0.2
   flutter_launcher_icons: ^0.9.1
-  flutter_easyloading: ^3.0.3
-  sqflite_porter:
+  flutter_easyloading: ^3.0.5
+  sqflite_common_porter:
     git:
-      url: git://github.com/tekartik/sqflite_more
-      ref: null_safety
-      path: sqflite_porter
+      url: https://github.com/tekartik/sqflite_more
+      ref: dart2_3
+      path: sqflite_common_porter
     version: '>=0.2.0'
   csv: ^5.0.0
   firebase_core: ^1.7.0

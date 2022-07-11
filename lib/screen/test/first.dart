@@ -228,10 +228,10 @@ class _StatefulComponentState extends State<StatefulComponent> {
             child: SfRadialGauge(
               axes: <RadialAxis>[
 
-                RadialAxis(minimum: 0.00,maximum: 30,
+                RadialAxis(minimum: 0.00,maximum: 15,
                     axisLabelStyle: GaugeTextStyle(fontSize: 20),
                   ranges: <GaugeRange>[
-                    GaugeRange(startValue: 0.00, endValue: 30,color: Colors.grey)
+                    GaugeRange(startValue: 0.00, endValue: 15,color: Colors.grey)
                   ],
                   pointers: <GaugePointer>[
                     isStartMeasure ?
