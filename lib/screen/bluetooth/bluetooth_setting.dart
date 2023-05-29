@@ -14,7 +14,7 @@ class BluetoothSetting extends StatefulWidget {
 
 class _BluetoothSettingState extends State<BluetoothSetting> {
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
-
+  ValueNotifier devicesString = ValueNotifier<String>("");
   String _address = "...";
   String _name = "...";
 
@@ -76,130 +76,138 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
     return Scaffold(
         appBar: AppBar(backgroundColor: mPrimaryColor,
             leading:  new IconButton(
-          icon: new Icon(Icons.arrow_back),
-          onPressed: () => Navigator.push(
-            context,MaterialPageRoute(builder: (context) => MainScreen(user:globals.user))
-          ),
-        )),
-        body: ListView(
-          children: <Widget>[
-              Container(
-                padding: const EdgeInsets.fromLTRB(30, 15, 10,0),
-              child:Column(
-                  children: [
-                  Row(
-                  children: [
-                  SvgPicture.asset('assets/images/bluetooth-b-brands.svg',fit: BoxFit.cover, // this is the solution for border
-                  width: 50),
-            SizedBox(width: 30),
-            Flexible(child: Text("ตั้งค่า Bluetooth",style: TextStyle(color: mPrimaryColor , fontSize: 30)))
-            ],
-          ),
-          SizedBox(height: 30),
-          ],
-
-          )
-
-          ),
-
-            // Divider(),
-
-            SwitchListTile(
-            title: Text('Enable Bluetooth',style: TextStyle(color: mPrimaryColor , fontSize: 25)),
-            value: _bluetoothState.isEnabled,
-            activeColor: mSecondaryColor,
-            inactiveThumbColor: mSecondaryColor,
-            onChanged: (bool value) {
-              // Do the request and update with the true value then
-              future() async {
-                // async lambda seems to not working
-                if (value)
-                  await FlutterBluetoothSerial.instance.requestEnable();
-                else
-                  await FlutterBluetoothSerial.instance.requestDisable();
-              }
-              future().then((_) {
-                setState(() {});
-              });
-            },
-          ),
-            ListTile(
-              title: Text('Bluetooth Status',style: TextStyle(color: mPrimaryColor , fontSize: 25)),
-              subtitle: Text(_bluetoothState.toString(),style: TextStyle(color: mSecondaryColor )),
-              trailing: ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )
-                    )
-                ),
-                child: const Text('Paired Device'),
-                onPressed: () {
-                  FlutterBluetoothSerial.instance.openSettings();
-                },
+              icon: new Icon(Icons.arrow_back),
+              onPressed: () => Navigator.push(
+                  context,MaterialPageRoute(builder: (context) => MainScreen())
               ),
-            ),
-            // SwitchListTile(
-            //   title: const Text('Auto-try specific pin when pairing'),
-            //   subtitle: const Text('Pin 1234'),
-            //   value: _autoAcceptPairingRequests,
-            //   onChanged: (bool value) {
-            //     setState(() {
-            //       _autoAcceptPairingRequests = value;
-            //     });
-            //     if (value) {
-            //       FlutterBluetoothSerial.instance.setPairingRequestHandler(
-            //               (BluetoothPairingRequest request) {
-            //             print("Trying to auto-pair with Pin 1234");
-            //             if (request.pairingVariant == PairingVariant.Pin) {
-            //               return Future.value("1234");
-            //             }
-            //             return Future.value(null);
-            //           });
-            //     } else {
-            //       FlutterBluetoothSerial.instance
-            //           .setPairingRequestHandler(null);
-            //     }
-            //   },
-            // ),
-            ListTile(
-              title: ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )
-                    )
+            )),
+        body:
+        Container(
+          child: ListView(
+            children: <Widget>[
+              Container(
+                  padding: const EdgeInsets.fromLTRB(40, 15, 10,0),
+                  child:Column(
+                    children: [
+                      Row(
+                        children: [
+                          SvgPicture.asset('assets/images/bluetooth-b-brands.svg',fit: BoxFit.cover, // this is the solution for border
+                              width: 30),
+                          SizedBox(width: 30),
+                          Flexible(child: Text("ตั้งค่า Bluetooth",style: TextStyle(color: mPrimaryColor , fontSize: 30)))
+                        ],
+                      ),
+                      SizedBox(height: 30),
+                    ],
+
+                  )
+              ),
+              SizedBox(height: 10),
+              ListTile(
+                title: Text('Pairing Bluetooth Device',style: TextStyle(color: mPrimaryColor , fontSize: 17)),
+                trailing: ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          )
+                      )
+                  ),
+                  child: const Text('Paired Device '),
+                  onPressed: () {
+                    FlutterBluetoothSerial.instance.openSettings();
+                  },
                 ),
-                child: const Text('Connect to paired device'),
-                onPressed: () async {
-                  final BluetoothDevice? selectedDevice =
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return SelectBondedDevicePage(checkAvailability: false);
+              ),
+              ListTile(
+                title: Text('Select Paired Device ',style: TextStyle(color: mPrimaryColor,fontSize: 17)),
+                trailing: ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          )
+                      )
+                  ),
+                  child: Text('Select Device'),
+                  onPressed: () async {
+                    final BluetoothDevice? selectedDevice =
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return SelectBondedDevicePage(checkAvailability: false);
+                        },
+                      ),
+                    );
+
+                    if (selectedDevice != null) {
+                      print('Connect -> selected ' + selectedDevice.address);
+                      globals.selectedDevice = selectedDevice ;
+                      devicesString.value = selectedDevice.name.toString();
+                      globals.isConnected = true;
+                    } else {
+                      print('Connect -> no device selected');
+                    }
+                  },
+                ),
+
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(17,15, 10, 0),
+                child: Row(
+                  children: [
+                    Text("Current Devices :" ,style: TextStyle(color: mPrimaryColor, fontSize: 17)),
+                    SizedBox(width: 10),
+                    // Text(globals.selectedDevice.name.toString() ,style: TextStyle(color: mPrimaryColor, fontSize: 20))
+                    ValueListenableBuilder(
+                      //TODO 2nd: listen playerPointsToAdd
+                      valueListenable: devicesString,
+                      builder: (context, value, widget) {
+                        //TODO here you can setState or whatever you need
+                        return Text(
+                          //TODO e.g.: create condition with playerPointsToAdd's value
+                            value != ""
+                                ? globals.selectedDevice.name.toString()
+                                : "" ,textAlign: TextAlign.center, style: TextStyle(color: mSecondaryColor, fontSize: 17,));
                       },
                     ),
-                  );
+                  ],
+                ),
 
-                  if (selectedDevice != null) {
-                    print('Connect -> selected ' + selectedDevice.address);
-                    globals.selectedDevice = selectedDevice ;
-                    globals.isConnected = true;
-                  } else {
-                    print('Connect -> no device selected');
-                  }
-                },
               ),
-                // subtitle: isConnected ? Text('Connect to ' + globals.selectedDevice.name.toString()): Text('')
-            ),
-            // isConnected ? Text('Connect to ' + globals.selectedDevice.name.toString()):null
-          ],
+              SizedBox(height: 20),
+              Container(
+                // padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                constraints: BoxConstraints.tightFor(width: 250, height: 40),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(mSecondaryColor),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          )
+                      )
+                  ),
+                  onPressed: () {
+                    if (globals.selectedDevice.address != "0") {
+                      globals.globalConnect = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MainScreen()),
+                      );
+                    }
+                  },
+                  child: Text('Connect', style: TextStyle(color: mFourthColor, fontSize: 15)),
+                ),
+              ),
+            ],
 
+          ),
         )
+
     );
   }
 }

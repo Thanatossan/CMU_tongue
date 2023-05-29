@@ -2,11 +2,10 @@ library my_prj.globals;
 import 'package:tongue_cmu_bluetooth/model/user.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:tongue_cmu_bluetooth/db/tongue_database.dart';
-
+import 'package:flutter/material.dart';
 late User user;
 bool isLoggedIn = false;
-late BluetoothDevice selectedDevice ;
-
+BluetoothDevice selectedDevice = BluetoothDevice(name: "Non-connected",address: "0") ;
 bool isConnected = false;
 bool changeToText = false;
 bool nextButton = false;
@@ -15,3 +14,8 @@ int stateCount = 0;
 String pathUser = "";
 String pathTest = "";
 bool startTime = false;
+bool globalConnect = false;
+int indexTest = 0;
+String FileName = "user";
+bool isfinishCountdown = false;
+ValueNotifier pageNotifier = ValueNotifier<bool>(false);

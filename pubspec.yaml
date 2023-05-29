@@ -49,6 +49,8 @@ dependencies:
   firebase_core: ^1.7.0
   firebase_storage: ^10.0.5
   file_picker: ^4.1.4
+  excel: any
+  rflutter_alert: ^2.0.4
 flutter_icons:
   android: true
   ios: true
